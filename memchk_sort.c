@@ -28,7 +28,7 @@ static int __compare_by_alloc_memblk(const void *n1, const void *n2)
     #endif
 }
 
-static int __compare_by_callstack(const void *n1, const void *n2)
+static int __compare_per_callstack(const void *n1, const void *n2)
 {
     struct callstack *callstack1 = *(struct callstack **)n1;
     struct callstack *callstack2 = *(struct callstack **)n2;
@@ -47,10 +47,10 @@ void mc_sort_by_alloc_memblk(void *buf, size_t num)
     mc_enable_hook();
 }
 
-void mc_sort_by_callstack(void *buf, size_t num)
+void mc_sort_per_callstack(void *buf, size_t num)
 {
     mc_disable_hook();
-    qsort(buf, num, sizeof(void *), __compare_by_callstack);
+    qsort(buf, num, sizeof(void *), __compare_per_callstack);
     mc_enable_hook();
 }
 

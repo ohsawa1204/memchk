@@ -357,7 +357,7 @@ int mc_print_all_memblk(void)
 }
 
 #ifdef ENABLE_CALLSTACK
-int __print_all_memblk_by_callstack(int link_index)
+int __print_all_memblk_per_callstack(int link_index)
 {
     struct alloc_memblk *alloc_memblk;
     struct callstack *callstack;
@@ -366,6 +366,9 @@ int __print_all_memblk_by_callstack(int link_index)
     mc_lock_callstack_hashtable();
 
     for_each_hashnode(callstack, mc_callstack_hashtable, CALLSTACK_HASHTABLE_SIZE) {
+        alloc_memblk = callstack->same_callstack_group_next[link_index];
+        if (!alloc_memblk)
+            continue;
         total_callstacks++;
     }
     struct callstack **callstack_array = (struct callstack **)mc_allocate_sort_buffer(total_callstacks);
@@ -388,7 +391,7 @@ int __print_all_memblk_by_callstack(int link_index)
 
     mc_unlock_callstack_hashtable();
 
-    mc_sort_by_callstack(callstack_array, total_callstacks);
+    mc_sort_per_callstack(callstack_array, total_callstacks);
 
     for (i = 0; i < total_callstacks; i++) {
         callstack = callstack_array[i];
@@ -409,7 +412,7 @@ int __print_all_memblk_by_callstack(int link_index)
 }
 #endif
 
-int mc_print_all_memblk_by_callstack(void)
+int mc_print_all_memblk_per_callstack(void)
 {
     #ifdef ENABLE_CALLSTACK
     int ret;
@@ -429,7 +432,7 @@ int mc_print_all_memblk_by_callstack(void)
     mc_init_filemaps_from_procmap();
     mc_enable_hook();
 
-    __print_all_memblk_by_callstack(LINK_CURRENT);
+    __print_all_memblk_per_callstack(LINK_CURRENT);
 
     mc_disable_hook();
     mc_term_filemaps();
@@ -475,7 +478,7 @@ int mc_compare_with_snapshot(void)
     return 0;
 }
 
-int mc_compare_with_snapshot_by_callstack(void)
+int mc_compare_with_snapshot_per_callstack(void)
 {
     #ifdef ENABLE_CALLSTACK
     int ret;
@@ -488,7 +491,7 @@ int mc_compare_with_snapshot_by_callstack(void)
     if (ret != 0)
         return ret;
 
-    mc_compare_snapshot_and_current_alloc_memblk_by_callstack(mc_alloc_memptr_hashtable_copy, ALLOC_MEMPTR_HASHTABLE_SIZE, alloc_memptr_hashtable_snapshot_copy, ALLOC_MEMPTR_HASHTABLE_SIZE);
+    mc_compare_snapshot_and_current_alloc_memblk_per_callstack(mc_alloc_memptr_hashtable_copy, ALLOC_MEMPTR_HASHTABLE_SIZE, alloc_memptr_hashtable_snapshot_copy, ALLOC_MEMPTR_HASHTABLE_SIZE);
 
     mc_destroy_all_alloc_memblk(mc_alloc_memptr_hashtable_copy, ALLOC_MEMPTR_HASHTABLE_SIZE);
     mc_destroy_all_alloc_memblk(alloc_memptr_hashtable_snapshot_copy, ALLOC_MEMPTR_HASHTABLE_SIZE);

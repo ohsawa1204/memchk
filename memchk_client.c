@@ -66,7 +66,7 @@ int get_all_memblk(int pid)
     return send_signal(pid, SIGRTMIN + 1);
 }
 
-int get_all_memblk_by_callback(int pid)
+int get_all_memblk_per_callstack(int pid)
 {
     return send_signal(pid, SIGRTMIN + 2);
 }
@@ -86,7 +86,7 @@ int compare_with_snapshot(int pid)
     return send_signal(pid, SIGRTMIN + 5);
 }
 
-int compare_with_snapshot_by_callstack(int pid)
+int compare_with_snapshot_per_callstack(int pid)
 {
     return send_signal(pid, SIGRTMIN + 6);
 }
@@ -101,7 +101,7 @@ int get_histogram_memblk(int pid)
     return send_signal(pid, SIGRTMIN + 8);
 }
 
-int get_physical_memory_status(int pid)
+int get_virtual_memory_status(int pid)
 {
     return send_signal(pid, SIGRTMIN + 9);
 }
@@ -144,15 +144,15 @@ void print_usage(void)
 {
     printf("memcheck -[a|A|b|c|C|d|g|p|m|M|s|u|l]\n");
     printf("          a [pid]: get All memblk\n");
-    printf("          A [pid]: get All memblk by callback group\n");
+    printf("          A [pid]: get All memblk per callstack group\n");
     printf("          b [pid]: check all memBlk\n");
     printf("          c [pid]: Compare snapshot\n");
-    printf("          C [pid]: Compare snapshot by callstack group\n");
+    printf("          C [pid]: Compare snapshot per callstack group\n");
     printf("          d [pid]: Destroy snapshot\n");
     printf("          g [pid]: get histoGram memblk\n");
     printf("          p [pid]: set Pid setting\n");
     printf("          m [pid]: get status\n");
-    printf("          M [pid]: get physical memory status\n");
+    printf("          M [pid]: get virtual memory status\n");
     printf("          s [pid]: create Snapshot\n");
     printf("          u: Update target\n");
     printf("          l: remove all logs\n");
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
             break;
         case 'A':
             pid = atoi(optarg);
-            get_all_memblk_by_callback(pid);
+            get_all_memblk_per_callstack(pid);
             break;
         case 'b':
             pid = atoi(optarg);
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
             break;
         case 'C':
             pid = atoi(optarg);
-            compare_with_snapshot_by_callstack(pid);
+            compare_with_snapshot_per_callstack(pid);
             break;
         case 'd':
             pid = atoi(optarg);
@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
             break;
         case 'M':
             pid = atoi(optarg);
-            get_physical_memory_status(pid);
+            get_virtual_memory_status(pid);
             break;
         case 'u':
             auto_update_settings();
@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
                 get_all_memblk(pid);
                 break;
             case 'A':
-                get_all_memblk_by_callback(pid);
+                get_all_memblk_per_callstack(pid);
                 break;
             case 'b':
                 check_all_memblk(pid);
@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
                 compare_with_snapshot(pid);
                 break;
             case 'C':
-                compare_with_snapshot_by_callstack(pid);
+                compare_with_snapshot_per_callstack(pid);
                 break;
             case 'd':
                 destroy_snapshot(pid);
@@ -257,7 +257,7 @@ int main(int argc, char *argv[])
                 get_status(pid);
                 break;
             case 'M':
-                get_physical_memory_status(pid);
+                get_virtual_memory_status(pid);
                 break;
             case 'g':
                 get_histogram_memblk(pid);

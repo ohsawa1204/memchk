@@ -168,15 +168,15 @@ int mc_get_alloc_cnt(void);
 int mc_get_free_cnt(void);
 void mc_print_histogram_alloc_memblk(void);
 int __print_all_memblk_on_hashtable(struct memptr *hashtable[], size_t hash_size);
-int __print_all_memblk_by_callstack(int link_index);
+int __print_all_memblk_per_callstack(int link_index);
 int mc_print_all_memblk(void);
-int mc_print_all_memblk_by_callstack(void);
+int mc_print_all_memblk_per_callstack(void);
 int mc_create_snapshot(void);
 void mc_destroy_snapshot(void);
 int mc_compare_with_snapshot(void);
-int mc_compare_with_snapshot_by_callstack(void);
+int mc_compare_with_snapshot_per_callstack(void);
 
-uint64_t mc_get_physical_memory_usage(void);
+uint64_t mc_get_virtual_memory_usage(void);
 
 int mc_match_callstack(struct callstack *cs1, struct callstack *cs2);
 struct callstack *mc_get_callstack(void);
@@ -208,7 +208,7 @@ void mc_finish_symbol(void);
 int mc_duplicate_all_alloc_memblk(struct memptr *dest_hashtable[], size_t dest_size, struct memptr *src_hashtable[], size_t src_size);
 void mc_destroy_all_alloc_memblk(struct memptr *hashtable[], size_t size);
 int mc_compare_snapshot_and_current_alloc_memblk(struct memptr *current_hashtable[], size_t current_size, struct memptr *snapshot_hashtable[], size_t snapshot_size);
-int mc_compare_snapshot_and_current_alloc_memblk_by_callstack(struct memptr *current_hashtable[], size_t current_size, struct memptr *snapshot_hashtable[], size_t snapshot_size);
+int mc_compare_snapshot_and_current_alloc_memblk_per_callstack(struct memptr *current_hashtable[], size_t current_size, struct memptr *snapshot_hashtable[], size_t snapshot_size);
 
 void mc_set_allocated_buffer(struct alloc_memblk *alloc_memblk, int init_usrptr);
 int mc_check_allocated_buffer(struct alloc_memblk *alloc_memblk, int freeing_now);
@@ -217,7 +217,7 @@ int mc_check_freed_buffer(struct free_memblk *free_memblk);
 
 void *mc_allocate_sort_buffer(size_t num);
 void mc_sort_by_alloc_memblk(void *buf, size_t num);
-void mc_sort_by_callstack(void *buf, size_t num);
+void mc_sort_per_callstack(void *buf, size_t num);
 void mc_free_sort_buffer(void *buf);
 
 float mc_change_unit(size_t size, char *unit);

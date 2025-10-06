@@ -3,7 +3,7 @@
 #include "memchk_hashtable.h"
 #include "memchk_alloc.h"
 
-//#define PHYSICAL_MEMORY_USAGE_DEBUG
+//#define VIRTUAL_MEMORY_USAGE_DEBUG
 
 static struct pageregion pageregion_head;
 static struct pageregion *pageregion_cand, *prev_pageregion_cand;
@@ -49,7 +49,7 @@ static int __register_block(unsigned long addr, size_t size)
 
     start = addr & ~(PAGE_SIZE - 1);
     end = (addr + size + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1);
-    #ifdef PHYSICAL_MEMORY_USAGE_DEBUG
+    #ifdef VIRTUAL_MEMORY_USAGE_DEBUG
     mc_log_print("start = 0x%lx, end = 0x%lx\n", start, end);
     #endif
 
@@ -188,7 +188,7 @@ static void __term_filemaps(void)
     __free_vmarea_array(vmarea_array, sizeof(struct vmarea) * __cnt);
 }
 
-static unsigned long __count_physical_memory_size(void)
+static unsigned long __count_virtual_memory_size(void)
 {
     struct pageregion *pageregion = pageregion_head.next;
     unsigned long ret = 0;
@@ -218,7 +218,7 @@ static void __print_vmareas(void)
     mc_log_print("total_arena_size = %lu, total_memblk_usage = %lu (ratio=%f)\n\n", total_arena_size, total_memblk_usage, (float)total_memblk_usage / total_arena_size);
 }
 
-#ifdef PHYSICAL_MEMORY_USAGE_DEBUG
+#ifdef VIRTUAL_MEMORY_USAGE_DEBUG
 static void __print_all_pageregions(void)
 {
     struct pageregion *pageregion = pageregion_head.next;
@@ -243,7 +243,7 @@ static void __free_all_pageregions(void)
     pageregion_head.next = NULL;
 }
 
-uint64_t mc_get_physical_memory_usage(void)
+uint64_t mc_get_virtual_memory_usage(void)
 {
     int rc;
     uint64_t ret;
@@ -258,11 +258,11 @@ uint64_t mc_get_physical_memory_usage(void)
     pageregion_head.next = NULL;
     for_each_hashnode(memptr, mc_alloc_memptr_hashtable_copy, ALLOC_MEMPTR_HASHTABLE_SIZE) {
         alloc_memblk = get_alloc_memblk_from_memptr(memptr);
-        #ifdef PHYSICAL_MEMORY_USAGE_DEBUG
+        #ifdef VIRTUAL_MEMORY_USAGE_DEBUG
         mc_log_print("\nregistering 0x%lx (%lu)\n", (unsigned long)alloc_memblk->memblk.buf, alloc_memblk->memblk.bufsize);
         #endif
         __register_block((unsigned long)alloc_memblk->memblk.buf, alloc_memblk->memblk.bufsize);
-        #ifdef PHYSICAL_MEMORY_USAGE_DEBUG
+        #ifdef VIRTUAL_MEMORY_USAGE_DEBUG
         __print_all_pageregions();
         mc_log_print("\n");
         #endif
@@ -271,7 +271,7 @@ uint64_t mc_get_physical_memory_usage(void)
     mc_destroy_all_alloc_memblk(mc_alloc_memptr_hashtable_copy, ALLOC_MEMPTR_HASHTABLE_SIZE);
 
     __init_filemaps_from_procmap();
-    ret = __count_physical_memory_size();
+    ret = __count_virtual_memory_size();
     __print_vmareas();
     __free_all_pageregions();
     __term_filemaps();

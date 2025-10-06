@@ -184,7 +184,7 @@ int mc_compare_snapshot_and_current_alloc_memblk(struct memptr *current_hashtabl
 }
 
 #ifdef ENABLE_CALLSTACK
-int mc_compare_snapshot_and_current_alloc_memblk_by_callstack(struct memptr *current_hashtable[], size_t current_size, struct memptr *snapshot_hashtable[], size_t snapshot_size)
+int mc_compare_snapshot_and_current_alloc_memblk_per_callstack(struct memptr *current_hashtable[], size_t current_size, struct memptr *snapshot_hashtable[], size_t snapshot_size)
 {
     int num_remainings_current, num_remainings_snapshot, cnt = 0;
     struct alloc_memblk *alloc_memblk;
@@ -242,7 +242,7 @@ int mc_compare_snapshot_and_current_alloc_memblk_by_callstack(struct memptr *cur
 
     mc_unlock_callstack_hashtable();
 
-    mc_sort_by_callstack(callstack_array, total_callstacks);
+    mc_sort_per_callstack(callstack_array, total_callstacks);
 
     for (i = 0; i < total_callstacks; i++) {
         callstack = callstack_array[i];
